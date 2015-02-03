@@ -114,22 +114,35 @@ $(document).ready(function () {
 		<input type="button" value="Search">
 		</form>
 		<div id="results"></div>
-		<div id="content">
-			Name:<br/>
-			Proposal Num:<br/>
-			Payment Amout:<br/>
-			GWP:<br/>
-			Login Date:<br/>
-			Proposal Status: <br/>
-			Insured Age:<br/>
-			Policy No:<br/>
-			Policy Start Date:<br/>
-			No.Of Lives:<br/>
-			Business Type:<br/>
-			Plan:<br/>
-			Policy Issuance Date:<br/>
-			
-		</div>
+		<?php
+		if ($_POST['hidden'])
+		{
+			$name = $_POST['name'];
+			$ans = mysql_query("SELECT * FROM raw WHERE name = $name");
+			echo "<div id='content'>";
+			while($res = mysql_fetch_assoc($ans))
+			{
+				echo "Name:".$res['name']."<br/>";
+				echo "Proposal Num:".$res['proposal_no']."<br/>";
+				echo "Payment Amout:".$res['payment_amount']."<br/>";
+				echo "GWP:".$res['gwp']."<br/>";
+				echo "Login Date:".$res['login_date']."<br/>";
+				echo "Proposal Status:".$res['proposal_status']."<br/>";
+				echo "Insured Age:".$res['insured_age']."<br/>";
+				echo "Policy No:".$res['policy_no']."<br/>";
+				echo "Policy Start Date:".$res['policy_Start_date']."<br/>";
+				echo "No.Of Lives:".$res['no_of_lives']."<br/>";
+				echo "Business Type:".$res['business_type']."<br/>";
+				echo "Plan:".$res['plan']."<br/>";
+				echo "Policy Issuance Date:".$res['policy_issuance_Date']."<br/>";
+				echo "<form method='POST' action='index_edit.php'>";
+				echo "<input type='button' value='Edit'>";
+				echo "<input type='hidden' value=".$name.">";
+				echo "</form>";
+			}
+			echo "</div>";
+		}
+		?>
 		<div id="testing"></div>
 
 	</div>
