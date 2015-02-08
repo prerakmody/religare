@@ -135,9 +135,21 @@ $(document).ready(function () {
 				echo "Business Type:".$res['business_type']."<br/>";
 				echo "Plan:".$res['plan']."<br/>";
 				echo "Policy Issuance Date:".$res['policy_issuance_Date']."<br/>";
+				echo "Address:".$res['address']."<br/>";
+				echo "City:".$res['city']."<br/>";
+				echo "Pincode:".$res['pincode']."<br/>";
+				echo "Mobile:".$res['mobile']."<br/>";
+				echo "Cover Type:".$res['cover_type']."<br/>";
+				echo "Client ID:".$res['client_id']."<br/>";
+				echo "DOB:".$res['dob']."<br/>";
+				echo "Landline:".$res['landline']."<br/>";
+				echo "Email ID:".$res['email']."<br/>";
+				echo "Claims:".$res['claims']."<br/>";
+				echo "Notes:".$res['notes']."<br/>";
+				echo "Renewal Due:".$res['renewal']."<br/>";
 				echo "<form method='POST' action='index_edit.php'>";
 				echo "<input type='button' value='Edit'>";
-				echo "<input type='hidden' value=".$name.">";
+				echo "<input type='hidden' name='hidden_edit' value=".$name.">";
 				echo "</form>";
 			}
 			echo "</div>";
