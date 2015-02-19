@@ -1,27 +1,43 @@
 <?php
 require 'config.php';
-$file_handle = fopen($_POST['csv_file'], 'rb');
-//$file_handle = fopen("data.csv", "r");
+ini_set('auto_detect_line_endings',true);
+if(isset($_POST['csv_file'])){
+	$file_handle = fopen(trim($_POST['csv_file']), 'r');
+	//print_r(fgetcsv($file_handle));
+	//$file_handle = fopen("data.csv", "r");
+	echo 'File is set<br/>';
+}
+$final = '';
 $i = 0;
 while (!feof($file_handle)) {
-	$line_of_text = fgetcsv($file_handle, 1024);
+	$line_of_text = fgetcsv($file_handle,4096,',');
+	//print_r($line_of_text);
+	if($line_of_text == ''){
+		print 'Empty';
+		file_put_contents("log_file", date("Y-m-d:H-i-s").','.($i-1), FILE_APPEND | LOCK_EX);
+		header("location:index.php");
+	}
+		
+	print '<br/>';
+	//echo 'Line:'.$line_of_text.'<br/>';
 	if($i >= 2){
 		$proposal_no = $line_of_text[0];
 		$ans = mysql_query("SELECT * FROM raw WHERE proposal_no = $proposal_no");
 		echo mysql_num_rows($ans);
 		if(!mysql_num_rows($ans)){
-			echo 'New:'.$i;
+			echo 'New:'.$i.'<br/>';
 			$name = $line_of_text[1];
+			echo 'Name:'.$name.'<br/>';
 			$payment_amount = $line_of_text[2];
 			$GWP = $line_of_text[3];
-			$login_date = strtotime($line_of_text[4]);
+			$login_date = date("Y-m-d",strtotime($line_of_text[4]));
 			$proposal_status = $line_of_text[5];
 			$policy_no = $line_of_text[7];
-			$policy_start_date = strtotime($line_of_text[8]);
+			$policy_start_date = date("Y-m-d",strtotime($line_of_text[8]));
 			$no_of_lives = $line_of_text[9];
 			$business_type = $line_of_text[10];
 			$plan = $line_of_text[11];
-			$policy_issuance_date = strtotime($line_of_text[14]);
+			$policy_issuance_date = date("Y-m-d",strtotime($line_of_text[14]));
 			if ($policy_issuance_date == '')
 				$policy_issuance_date = 0;
 			$sum_insured = preg_replace('/Lacs/', '', str_replace(' ', '', $line_of_text[15]));
@@ -31,13 +47,22 @@ while (!feof($file_handle)) {
 			//echo $sum_insured;
 			$cover_type = $line_of_text[16];
 			
-			$policy_end_date = strtotime($line_of_text[25]);
+			$policy_end_date = date("Y-m-d",strtotime($line_of_text[25]));
 			
 			$query = "INSERT INTO raw(proposal_no,name,payment_amount,GWP,login_date,proposal_status,policy_no,policy_start_date,no_of_lives,business_type,plan,
 					policy_issuance_date,sum_insured,cover_type,policy_end_date) 
 				VALUES('$proposal_no','$name',$payment_amount,$GWP,$login_date,'$proposal_status','$policy_no',$policy_start_date,$no_of_lives,'$business_type','$plan',
 					$policy_issuance_date,$sum_insured,'$cover_type',$policy_end_date)";
-			mysql_query($query) or die(mysql_error());
+			try{
+				$final = mysql_query($query) or die(mysql_error());	
+			}
+			catch(Excepion $e){
+				if ($final == false){
+					echo 'Log File';
+					file_put_contents("log_file", $e->getMessage()."\n", FILE_APPEND | LOCK_EX);
+					header("location:index.php");
+				}
+			}
 		}
 	}
 	$i++;
